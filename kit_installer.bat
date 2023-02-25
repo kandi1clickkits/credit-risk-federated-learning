@@ -8,8 +8,7 @@ ECHO 	This kit installer works only on Windows OS
 ECHO 	Based on your network speed, the installation may take a while
 ECHO======================================================================================
 SET KIT_NAME=credit-risk-federated-learning
-REM SET WORKING_DIR=D:\work_items\kits_testing\!KIT_NAME!
-SET WORKING_DIR=C:\kandikits\!KIT_NAME!
+SET WORKING_DIR=C:\kandikits\!KIT_NAME!\!KIT_NAME!
 REM update below path if required
 REM SET PY_VERSION=3.8.10
 SET PY_VERSION=3.9.8
@@ -155,7 +154,6 @@ IF EXIST !WORKING_DIR!\%EXTRACTED_REPO_DIR%\ (
     CALL :LOG "Extracting the repo ..."
     tar -xvf %REPO_NAME% >> !WORKING_DIR!\log.txt 2>&1
     TITLE Installing %KIT_NAME% kit 90%% xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx__________
-	CALL :Download_image
     TITLE Installing %KIT_NAME% kit 100%% xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     timeout 1  >nul
 	for /f %%A in ('copy /Z "%~dpf0" nul') do set "CR=%%A"
@@ -164,20 +162,6 @@ IF EXIST !WORKING_DIR!\%EXTRACTED_REPO_DIR%\ (
 )
 EXIT /B 0	
 
-:Download_image
-CALL :LOG "Downloading Image source ... "
-cd %EXTRACTED_REPO_DIR%
-REM bitsadmin /transfer python_download_job /download  https://kandi.dev/owassets/kandi1clickkits-model-assets/fashion-model-data.zip "%cd%\fashion-model-data.zip"
-curl https://kandi.dev/owassets/kandi1clickkits-model-assets/fashion-model-data.zip --output fashion-model-data.zip >> !WORKING_DIR!\log.txt 2>&1
-IF ERRORLEVEL 1 (
-	CALL :LOG "Error with Downloading Image source ... "
-    EXIT /B 1
-)
-tar -xvf "fashion-model-data.zip" >> !WORKING_DIR!\log.txt 2>&1
-del fashion-model-data.zip
-cd ..
-CALL :LOG "Download completed Image source ... "
-EXIT /B 0
 
 :Install_python_and_modules
 CALL :LOG "Downloading python %PY_VERSION% ... "
@@ -265,10 +249,10 @@ CALL :LOG "Installing dependent modules ..."
 bitsadmin /transfer dependency_download_job /download /priority foreground %REPO_DEPENDENCIES_URL% "!WORKING_DIR!\requirements.txt" >> !WORKING_DIR!\log.txt 2>&1
 CALL :LOG "!PATH!"
 python -m pip install virtualenv >> !WORKING_DIR!\log.txt 2>&1
-python -m virtualenv fashion-kit-env >> !WORKING_DIR!\log.txt 2>&1
+python -m virtualenv federated-kit-env >> !WORKING_DIR!\log.txt 2>&1
 REM python -m venv kkit
 pushd .
-cd .\fashion-kit-env\Scripts
+cd .\federated-kit-env\Scripts
 CALL :LOG "%cd%"
 CALL .\activate.bat
 popd

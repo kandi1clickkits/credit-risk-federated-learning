@@ -1,3 +1,3 @@
 @echo off
-python client4.py
+C:\kandikits\credit-risk-federated-learning\credit-risk-federated-learning\federated-kit-env\Scripts\python.exe client4.py
 pause
