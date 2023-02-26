@@ -59,7 +59,7 @@ IF /I "%CONFIRM%" NEQ "Y" (
 	ECHO kit starting...
 	TITLE %KIT_NAME% Kit
 	ECHO TO QUIT PRESS CTRL+C
-	python -m jupyter notebook "%EXTRACTED_REPO_DIR%\%NOTEBOOK_NAME%" >> !WORKING_DIR!\log.txt 2>&1
+	python -m jupyter notebook "%NOTEBOOK_NAME%" >> !WORKING_DIR!\log.txt 2>&1
 )
 PAUSE
 EXIT /B %ERRORLEVEL%

@@ -14,7 +14,7 @@ def get_evaluate_fn(model: LogisticRegression, counter):
     """Return an evaluation function for server-side evaluation."""
 
     # Load test data here to avoid the overhead of doing it in `evaluate` itself
-    _, (X_test, y_test) = utils.load_data_c1()
+    _, (X_test, y_test) = utils.load_data(client="client1")
 
     # The `evaluate` function will be called after every round
     def evaluate(server_round, parameters: fl.common.NDArrays, config):
@@ -30,7 +30,7 @@ def get_evaluate_fn(model: LogisticRegression, counter):
         print(classification_report(y_test, predictions))
         print({"accuracy_score": accuracy_score(y_test, predictions)})
         if counter > 0:
-            filename = f"model/agg_models/agg_model_{str(counter-1)}.sav"
+            filename = f"model/agg_models/agg_round_{str(counter)}_model.sav"
             pickle.dump(model, open(filename, 'wb'))
         counter = counter + 1
         return  {"Aggregated Results: loss ":loss}, {"accuracy": accuracy}
@@ -48,14 +48,14 @@ if __name__ == "__main__":
     )
     utils.set_initial_params(model)
     strategy = fl.server.strategy.FedAvg(
-        min_available_clients=1,
-        min_fit_clients=1,
-        fraction_fit = 1.0,
+        min_available_clients=4,
+        min_fit_clients=2,
+        fraction_fit = 0.8,
         evaluate_fn=get_evaluate_fn(model, counter),
         on_fit_config_fn=fit_round,
     )
     fl.server.start_server(
-        server_address="localhost:5020",
+        server_address="localhost:8080",
         strategy=strategy,
-        config=fl.server.ServerConfig(num_rounds=1),
+        config=fl.server.ServerConfig(num_rounds=5),
     )

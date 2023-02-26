@@ -14,11 +14,6 @@ LogRegParams = Union[XY, Tuple[np.ndarray]]
 XYList = List[XY]
 
 
-
-
-
-    
-
 def get_model_parameters(model: LogisticRegression) -> LogRegParams:
     """Returns the paramters of a sklearn LogisticRegression model."""
     if model.fit_intercept:
@@ -55,7 +50,6 @@ def set_initial_params(model: LogisticRegression):
     n_features = 86
 
     try:
-        print("Inside TRY BLOCK")
         folder_path = f'model/agg_models'
         file_type = r'\*.sav'
         files = glob.glob(folder_path + file_type)
@@ -67,16 +61,24 @@ def set_initial_params(model: LogisticRegression):
         if model.fit_intercept:
             model.intercept_ = latest_model.intercept_
     except:
-        print("Inside EXCEPT BLOCK")
         model.classes_ = np.array([i for i in range(2)])
         model.coef_ = np.zeros((n_classes, n_features))
         if model.fit_intercept:
             model.intercept_ = np.zeros((n_classes,))
 
-def load_data_c1() -> Dataset:
-    data = pd.read_csv('data/data1_2.csv')
-    le= LabelEncoder()
+def load_data(client) -> Dataset:
+    if client=="client1":
+        data = pd.read_csv('data/data1.csv')
+    elif client=="client2":
+        data = pd.read_csv('data/data2.csv')
+    elif client=="client3":
+        data = pd.read_csv('data/data3.csv')
+    elif client=="client4":
+        data = pd.read_csv('data/data4.csv')
+    elif client=="test":
+        data = pd.read_csv('data/test.csv')
 
+    le= LabelEncoder()
     df =np.array(data)
     X = df[:,:-1]
     y =df[:,-1]
@@ -92,95 +94,6 @@ def load_data_c1() -> Dataset:
     X_scaler = scaler.fit(x_train)
     x_train = X_scaler.transform(x_train)
     x_test = X_scaler.transform(x_test)
-    return (x_train, y_train), (x_test, y_test)
-
-def load_data_c2() -> Dataset:
-    data = pd.read_csv('data/data2_2.csv')
-    le= LabelEncoder()
-
-    df =np.array(data)
-    X = df[:,:-1]
-    y =df[:,-1]
-    sm = SMOTE(sampling_strategy='minority', random_state=42)
-    X, y= sm.fit_resample(X, y)
-    y_encoded=le.fit_transform(y)
-
-    """ Select the 80% of the data as Training data and 20% as test data """
-    from sklearn.model_selection import train_test_split
-    x_train, x_test, y_train, y_test = train_test_split(X, y_encoded, random_state=1, stratify=y)
-    from sklearn.preprocessing import StandardScaler
-    scaler = StandardScaler()
-    X_scaler = scaler.fit(x_train)
-    x_train = X_scaler.transform(x_train)
-    x_test = X_scaler.transform(x_test)
-    return (x_train, y_train), (x_test, y_test)
-
-def load_data_c3() -> Dataset:
-    data = pd.read_csv('data/data3.csv')
-    le= LabelEncoder()
-
-    df =np.array(data)
-    X = df[:,:-1]
-    y =df[:,-1]
-    sm = SMOTE(sampling_strategy='minority', random_state=42)
-    X, y= sm.fit_resample(X, y)
-    y_encoded=le.fit_transform(y)
-
-    """ Select the 80% of the data as Training data and 20% as test data """
-    from sklearn.model_selection import train_test_split
-    x_train, x_test, y_train, y_test = train_test_split(X, y_encoded, random_state=1, stratify=y)
-    from sklearn.preprocessing import StandardScaler
-    scaler = StandardScaler()
-    X_scaler = scaler.fit(x_train)
-    x_train = X_scaler.transform(x_train)
-    x_test = X_scaler.transform(x_test)
-    return (x_train, y_train), (x_test, y_test)
-
-""" Read data for the other client """
-def load_data_c4() -> Dataset:
-    data = pd.read_csv('data/data4.csv')
-    le= LabelEncoder()
-
-    df =np.array(data)
-    X = df[:,:-1]
-    y =df[:,-1]
-    sm = SMOTE(sampling_strategy='minority', random_state=42)
-    X, y= sm.fit_resample(X, y)
-    y_encoded=le.fit_transform(y)
-
-    """ Select the 80% of the data as Training data and 20% as test data """
-    from sklearn.model_selection import train_test_split
-    x_train, x_test, y_train, y_test = train_test_split(X, y_encoded, random_state=1, stratify=y)
-    
-    from sklearn.preprocessing import StandardScaler
-    scaler = StandardScaler()
-    X_scaler = scaler.fit(x_train)
-    x_train = X_scaler.transform(x_train)
-    x_test = X_scaler.transform(x_test)
-
-    return (x_train, y_train), (x_test, y_test)
-
-def load_test() -> Dataset:
-    data = pd.read_csv('test.csv')
-    le= LabelEncoder()
-
-    df =np.array(data)
-    X = df[:,:-1]
-    y =df[:,-1]
-    sm = SMOTE(sampling_strategy='minority', random_state=42)
-    X, y= sm.fit_resample(X, y)
-    y_encoded=le.fit_transform(y)
-
-    """ Select the 80% of the data as Training data and 20% as test data """
-    from sklearn.model_selection import train_test_split
-    x_train, x_test, y_train, y_test = train_test_split(X, y_encoded, random_state=1, stratify=y)
-    
-    from sklearn.preprocessing import StandardScaler
-    scaler = StandardScaler()
-    X_scaler = scaler.fit(x_train)
-    x_train = X_scaler.transform(x_train)
-    x_test = X_scaler.transform(x_test)
-
     return (x_train, y_train), (x_test, y_test)
 
 def shuffle(X: np.ndarray, y: np.ndarray) -> XY:
@@ -188,7 +101,6 @@ def shuffle(X: np.ndarray, y: np.ndarray) -> XY:
     rng = np.random.default_rng()
     idx = rng.permutation(len(X))
     return X[idx], y[idx]
-
 
 def partition(X: np.ndarray, y: np.ndarray, num_partitions: int) -> XYList:
     """Split X and y into a number of partitions."""

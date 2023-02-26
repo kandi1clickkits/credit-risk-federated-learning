@@ -9,7 +9,7 @@ import pickle
 
 if __name__ == "__main__":
     # Load credit risk data
-    (X_train, y_train), (X_test, y_test) = utils.load_data_c3()
+    (X_train, y_train), (X_test, y_test) = utils.load_data(client="client3")
     counter = 0
     # Split train set into 10 partitions and randomly use one for training.
     partition_id = np.random.choice(10)
@@ -38,7 +38,7 @@ if __name__ == "__main__":
             with warnings.catch_warnings():
                 warnings.simplefilter("ignore")
                 model.fit(X_train, y_train)
-                filename = f"model/client3/client_3_model_{str(counter)}.sav"
+                filename = f"model/client3/client_3_round_{config['server_round']}_model.sav"
                 pickle.dump(model, open(filename, 'wb'))
                 counter += 1
             print(f"Training finished for round {config['server_round']}")
@@ -54,4 +54,4 @@ if __name__ == "__main__":
             return loss, len(X_test), {"accuracy": accuracy}
 
     # Start Flower client
-    fl.client.start_numpy_client(server_address="localhost:5020", client=FlowerClient())
+    fl.client.start_numpy_client(server_address="localhost:8080", client=FlowerClient())
