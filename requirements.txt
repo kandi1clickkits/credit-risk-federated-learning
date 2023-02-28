@@ -96,3 +96,4 @@ wincertstore==0.2
 xmltodict==0.13.0
 yarl==1.8.2
 zipp==3.14.0
+notebook==6.5.2
